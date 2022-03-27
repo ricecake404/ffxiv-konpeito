@@ -7,6 +7,9 @@ import {
 } from "@mui/material";
 import React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AsyncAutocomplete from "../components/basic/AsyncAutocomplete";
+import { search } from "../service/xivapiService";
+import { RecipeId } from "../model/eorzea/recipe";
 
 interface HomeProps {}
 
@@ -17,6 +20,10 @@ const FishListPage: React.FC<HomeProps> = () => {
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
       setExpanded(isExpanded ? panel : false);
     };
+
+  const [recipeId, setRecipeId] = React.useState<RecipeId | undefined>(
+    undefined
+  );
 
   return (
     <>
@@ -30,18 +37,22 @@ const FishListPage: React.FC<HomeProps> = () => {
             aria-controls="panel1bh-content"
             id="panel1bh-header"
           >
-            <Typography sx={{ width: "33%", flexShrink: 0 }}>
-              General settings
-            </Typography>
+            <Typography sx={{ width: "33%", flexShrink: 0 }}>Item</Typography>
             <Typography sx={{ color: "text.secondary" }}>
-              I am an accordion
+              RecipeId: {recipeId}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              Nulla facilisi. Phasellus sollicitudin nulla et quam mattis
-              feugiat. Aliquam eget maximus est, id dignissim quam.
-            </Typography>
+            <AsyncAutocomplete
+              onSearch={async (searchText) => {
+                const result = await search(searchText, "recipe");
+                return result.Results.map((it) => ({
+                  key: it.ID,
+                  label: it.Name,
+                }));
+              }}
+              onOptionChange={(option) => setRecipeId(option?.key)}
+            />
           </AccordionDetails>
         </Accordion>
         <Accordion

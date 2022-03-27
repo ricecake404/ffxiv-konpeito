@@ -30,7 +30,7 @@ function App() {
         <AppBar position="sticky">
           <Toolbar variant="dense" id="back-to-top-anchor">
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Pastry Fish V2
+              FFXIV Konpeito
             </Typography>
           </Toolbar>
         </AppBar>
@@ -51,7 +51,12 @@ function App() {
               }}
             >
               {Pages.map((page) => (
-                <Tooltip title={page.title} placement="right" arrow>
+                <Tooltip
+                  title={page.title}
+                  placement="right"
+                  arrow
+                  key={page.title}
+                >
                   <Tab
                     icon={page.icon}
                     sx={{

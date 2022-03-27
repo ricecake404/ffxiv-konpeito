@@ -1,8 +1,8 @@
 import * as React from "react";
 import ListIcon from "@mui/icons-material/List";
 import InfoIcon from "@mui/icons-material/Info";
-import FlowPage from "../pages/Flow";
-import About from "../pages/About";
+import FlowPage from "../page/Flow";
+import About from "../page/About";
 
 interface Page {
   icon: React.ReactElement;
