@@ -1,5 +1,5 @@
 {
-  "name": "ffxiv-pastry-fish-v2",
+  "name": "ffxiv-konpeito",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -18,11 +18,12 @@
     "@testing-library/react": "^12.1.3",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.4.0",
+    "@types/lodash": "^4.14.180",
     "@types/node": "^16.11.25",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
-    "lint-staged": "^12.3.4",
-    "prettier": "^2.5.1",
+
+    "lodash": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^6.2.2",
@@ -31,6 +32,8 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "lint-staged": "^12.3.4",
+    "prettier": "^2.5.1",
     "@commitlint/cli": "^16.2.1",
     "@commitlint/config-conventional": "^16.2.1",
     "husky": "^7.0.4"
@@ -55,7 +58,8 @@
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
-      "prettier --write"
+      "prettier --write",
+      "eslint --cache --fix"
     ]
   }
 }
