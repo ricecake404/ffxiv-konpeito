@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "FFXIV Konpeito",
+  "name": "FFXIV Konpeito Crafting Simulator",
   "icons": [
     {
       "src": "favicon.ico",

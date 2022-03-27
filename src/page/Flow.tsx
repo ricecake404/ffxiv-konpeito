@@ -2,7 +2,12 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  Checkbox,
   Container,
+  FormControlLabel,
+  Stack,
+  TextField,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -10,10 +15,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AsyncAutocomplete from "../components/basic/AsyncAutocomplete";
 import { search } from "../service/xivapiService";
 import { RecipeId } from "../model/eorzea/recipe";
+import {
+  CraftingStatus,
+  craftingStatusToString,
+  EmptyStatus,
+  Status,
+  toCraftingStatus,
+} from "../model/eorzea/status";
 
-interface HomeProps {}
-
-const FishListPage: React.FC<HomeProps> = () => {
+const FishListPage: React.FC = () => {
   const [expanded, setExpanded] = React.useState<string | false>(false);
 
   const handleChange =
@@ -24,6 +34,65 @@ const FishListPage: React.FC<HomeProps> = () => {
   const [recipeId, setRecipeId] = React.useState<RecipeId | undefined>(
     undefined
   );
+  const [status, setStatus] = React.useState<Status>(EmptyStatus);
+  const setStatusField = (field: keyof Status, value: Status[keyof Status]) =>
+    setStatus((prevStatus) => ({
+      ...prevStatus,
+      [field]: value,
+    }));
+  const craftingStatus = React.useMemo<CraftingStatus>(
+    () => toCraftingStatus(status),
+    [status]
+  );
+
+  // TODO remove test code
+  React.useEffect(() => {
+    setRecipeId(1);
+    setStatus({
+      level: 1,
+      craftsmanship: 24,
+      control: 0,
+      cp: 180,
+      professional: false,
+    });
+  }, []);
+
+  const statusInputs = React.useMemo(() => {
+    return Object.entries(status)
+      .map(([statusKey, statusValue]) => {
+        if (typeof statusValue === "number") {
+          return (
+            <TextField
+              label={statusKey}
+              value={statusValue}
+              type="number"
+              onChange={(e) =>
+                setStatusField(statusKey as keyof Status, +e.target.value)
+              }
+            />
+          );
+        } else if (typeof statusValue === "boolean") {
+          return (
+            <FormControlLabel
+              label={statusKey}
+              control={
+                <Checkbox
+                  checked={statusValue}
+                  onChange={(e) =>
+                    setStatusField(statusKey as keyof Status, e.target.checked)
+                  }
+                />
+              }
+            />
+          );
+        } else {
+          throw Error("value not supported");
+        }
+      })
+      .map((it) => {
+        return <Box sx={{ my: 1 }}>{it}</Box>;
+      });
+  }, [status]);
 
   return (
     <>
@@ -32,11 +101,7 @@ const FishListPage: React.FC<HomeProps> = () => {
           expanded={expanded === "panel1"}
           onChange={handleChange("panel1")}
         >
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
-          >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography sx={{ width: "33%", flexShrink: 0 }}>Item</Typography>
             <Typography sx={{ color: "text.secondary" }}>
               RecipeId: {recipeId}
@@ -64,17 +129,15 @@ const FishListPage: React.FC<HomeProps> = () => {
             aria-controls="panel2bh-content"
             id="panel2bh-header"
           >
-            <Typography sx={{ width: "33%", flexShrink: 0 }}>Users</Typography>
+            <Typography sx={{ width: "33%", flexShrink: 0 }}>
+              Worker of Light
+            </Typography>
             <Typography sx={{ color: "text.secondary" }}>
-              You are currently not an owner
+              Status: {craftingStatusToString(craftingStatus)}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              Donec placerat, lectus sed mattis semper, neque lectus feugiat
-              lectus, varius pulvinar diam eros in elit. Pellentesque convallis
-              laoreet laoreet.
-            </Typography>
+            <Stack>{statusInputs}</Stack>
           </AccordionDetails>
         </Accordion>
         <Accordion
