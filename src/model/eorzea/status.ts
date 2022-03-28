@@ -10,17 +10,17 @@ export const craftingStatusToString = (cs: CraftingStatus): string => {
 };
 
 export interface Status extends CraftingStatus {
-  professional: boolean;
+  specialist: boolean;
 }
 
 export const toCraftingStatus = (s: Status): CraftingStatus => {
-  // TODO change status according to professional and buffers(food, etc...)
+  // TODO change status according to master and buffers(food, etc...)
 
   let craftsmanshipBuff = 0;
   let controlBuff = 0;
   let cpBuff = 0;
 
-  if (s.professional) {
+  if (s.specialist) {
     craftsmanshipBuff = 20;
     controlBuff = 20;
     cpBuff = 15;
@@ -39,5 +39,5 @@ export const EmptyStatus: Status = {
   craftsmanship: 0,
   control: 0,
   cp: 0,
-  professional: false,
+  specialist: false,
 };

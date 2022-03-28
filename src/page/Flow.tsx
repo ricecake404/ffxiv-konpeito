@@ -2,10 +2,12 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Avatar,
   Box,
   Checkbox,
   Container,
   FormControlLabel,
+  LinearProgress,
   Stack,
   TextField,
   Typography,
@@ -13,8 +15,14 @@ import {
 import React from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AsyncAutocomplete from "../components/basic/AsyncAutocomplete";
-import { search } from "../service/xivapiService";
-import { RecipeId } from "../model/eorzea/recipe";
+import {
+  getActions,
+  getCraftActions,
+  getRecipe,
+  HOST,
+  search,
+} from "../service/xivapiService";
+import { Recipe, RecipeId } from "../model/eorzea/recipe";
 import {
   CraftingStatus,
   craftingStatusToString,
@@ -22,9 +30,54 @@ import {
   Status,
   toCraftingStatus,
 } from "../model/eorzea/status";
+import { toRecipe } from "../model/ffxiv-api/recipe";
+import {
+  CraftAction,
+  CraftActionList,
+  CraftingProcessStatus,
+  EmptyCraftingProcessStatus,
+  initCraftingProcessStatus,
+} from "../model/eorzea/CraftAction";
+import { groupBy, uniq } from "lodash";
+import { Image } from "@mui/icons-material";
+
+interface CraftProgressBarProps {
+  value: number;
+  total: number;
+}
+
+interface CraftActionDisplay extends CraftAction {
+  iconUrl: string;
+  actionId: number;
+}
+
+const CraftProgressBar: React.FC<CraftProgressBarProps> = ({
+  value,
+  total,
+}) => {
+  const calcPercentage = (val: number, total: number) => (val / total) * 100;
+
+  return (
+    <Box>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box sx={{ width: "100%", mr: 1 }}>
+          <LinearProgress
+            variant="determinate"
+            value={calcPercentage(value, total)}
+          />
+        </Box>
+        <Box sx={{ minWidth: 70 }}>
+          <Typography variant="body2" color="text.secondary">
+            {`${value} / ${total}`}
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
 
 const FishListPage: React.FC = () => {
-  const [expanded, setExpanded] = React.useState<string | false>(false);
+  const [expanded, setExpanded] = React.useState<string | false>("panel3");
 
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -34,6 +87,16 @@ const FishListPage: React.FC = () => {
   const [recipeId, setRecipeId] = React.useState<RecipeId | undefined>(
     undefined
   );
+  const [recipe, setRecipe] = React.useState<Recipe | undefined>();
+  React.useEffect(() => {
+    if (recipeId) {
+      (async () => {
+        const r = await getRecipe(recipeId);
+        setRecipe(toRecipe(r));
+      })();
+    }
+  }, [recipeId]);
+
   const [status, setStatus] = React.useState<Status>(EmptyStatus);
   const setStatusField = (field: keyof Status, value: Status[keyof Status]) =>
     setStatus((prevStatus) => ({
@@ -44,6 +107,15 @@ const FishListPage: React.FC = () => {
     () => toCraftingStatus(status),
     [status]
   );
+  const [craftingProcessStatus, setCraftingProcessStatus] =
+    React.useState<CraftingProcessStatus>(EmptyCraftingProcessStatus);
+  React.useEffect(() => {
+    if (recipe) {
+      setCraftingProcessStatus(
+        initCraftingProcessStatus(craftingStatus, recipe)
+      );
+    }
+  }, [craftingStatus, recipe]);
 
   // TODO remove test code
   React.useEffect(() => {
@@ -53,7 +125,7 @@ const FishListPage: React.FC = () => {
       craftsmanship: 24,
       control: 0,
       cp: 180,
-      professional: false,
+      specialist: false,
     });
   }, []);
 
@@ -63,6 +135,7 @@ const FishListPage: React.FC = () => {
         if (typeof statusValue === "number") {
           return (
             <TextField
+              key={statusKey}
               label={statusKey}
               value={statusValue}
               type="number"
@@ -74,6 +147,7 @@ const FishListPage: React.FC = () => {
         } else if (typeof statusValue === "boolean") {
           return (
             <FormControlLabel
+              key={statusKey}
               label={statusKey}
               control={
                 <Checkbox
@@ -89,10 +163,49 @@ const FishListPage: React.FC = () => {
           throw Error("value not supported");
         }
       })
-      .map((it) => {
-        return <Box sx={{ my: 1 }}>{it}</Box>;
+      .map((it, index) => {
+        return (
+          <Box key={index} sx={{ my: 1 }}>
+            {it}
+          </Box>
+        );
       });
   }, [status]);
+
+  const [classJobId, setClassJobId] = React.useState<number>(8);
+  const [actions, setActions] = React.useState<CraftActionDisplay[]>([]);
+  React.useEffect(() => {
+    (async () => {
+      const [actionsResp, craftActionsResp] = await Promise.all([
+        getActions(
+          uniq(
+            CraftActionList.filter((it) => it.table === "Action").map(
+              (it) => it.classJobActions.get(classJobId)!!
+            )
+          )
+        ),
+        getCraftActions(
+          uniq(
+            CraftActionList.filter((it) => it.table === "CraftAction").map(
+              (it) => it.classJobActions.get(classJobId)!!
+            )
+          )
+        ),
+      ]);
+      const resps = actionsResp.Results.concat(craftActionsResp.Results);
+      setActions(
+        CraftActionList.map((action) => {
+          const actionId = action.classJobActions.get(classJobId);
+          const _action = resps.find((it) => it.ID === actionId)!!;
+          return {
+            ...action,
+            iconUrl: HOST + _action.IconHD,
+            actionId: _action.ID,
+          } as CraftActionDisplay;
+        })
+      );
+    })();
+  }, [classJobId]);
 
   return (
     <>
@@ -108,16 +221,21 @@ const FishListPage: React.FC = () => {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <AsyncAutocomplete
-              onSearch={async (searchText) => {
-                const result = await search(searchText, "recipe");
-                return result.Results.map((it) => ({
-                  key: it.ID,
-                  label: it.Name,
-                }));
-              }}
-              onOptionChange={(option) => setRecipeId(option?.key)}
-            />
+            <Stack direction="row">
+              <AsyncAutocomplete
+                onSearch={async (searchText) => {
+                  const result = await search(searchText, "recipe");
+                  return result.Results.map((it) => ({
+                    key: it.ID,
+                    label: it.Name,
+                  }));
+                }}
+                onOptionChange={(option) => setRecipeId(option?.key)}
+              />
+              <Box>
+                <pre>{JSON.stringify(recipe, null, 2)}</pre>
+              </Box>
+            </Stack>
           </AccordionDetails>
         </Accordion>
         <Accordion
@@ -150,17 +268,62 @@ const FishListPage: React.FC = () => {
             id="panel3bh-header"
           >
             <Typography sx={{ width: "33%", flexShrink: 0 }}>
-              Advanced settings
+              Actions
             </Typography>
-            <Typography sx={{ color: "text.secondary" }}>
-              Filtering has been entirely disabled for whole web server
-            </Typography>
+            <Typography sx={{ color: "text.secondary" }}>-</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography>
-              Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer
-              sit amet egestas eros, vitae egestas augue. Duis vel est augue.
-            </Typography>
+            <Stack>
+              <Box>
+                <pre>{JSON.stringify(craftingProcessStatus, null, 2)}</pre>
+              </Box>
+              <CraftProgressBar
+                value={craftingProcessStatus.progress}
+                total={craftingProcessStatus.progressTotal}
+              />
+              <CraftProgressBar
+                value={craftingProcessStatus.quality}
+                total={craftingProcessStatus.qualityTotal}
+              />
+              <CraftProgressBar
+                value={craftingProcessStatus.cp}
+                total={craftingProcessStatus.cpTotal}
+              />
+              <CraftProgressBar
+                value={craftingProcessStatus.durability}
+                total={craftingProcessStatus.durabilityTotal}
+              />
+              {/*<Box>{JSON.stringify(actions)}</Box>*/}
+              <Box>
+                {Object.entries(groupBy(actions, "type")).map(
+                  ([type, _actions]) => {
+                    return (
+                      <Box key={type}>
+                        <Typography>{type}</Typography>
+                        <Stack direction="row">
+                          {_actions.map((action) => (
+                            <Box
+                              key={action.id}
+                              display="flex"
+                              flexDirection="column"
+                              mx={1}
+                            >
+                              <Avatar
+                                alt="Remy Sharp"
+                                src={action.iconUrl}
+                                sx={{ width: 40, height: 40 }}
+                                variant="square"
+                              />
+                              {action.name.chs}
+                            </Box>
+                          ))}
+                        </Stack>
+                      </Box>
+                    );
+                  }
+                )}
+              </Box>
+            </Stack>
           </AccordionDetails>
         </Accordion>
         <Accordion
