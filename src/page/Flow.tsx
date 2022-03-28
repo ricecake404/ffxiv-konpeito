@@ -39,7 +39,6 @@ import {
   initCraftingProcessStatus,
 } from "../model/eorzea/CraftAction";
 import { groupBy, uniq } from "lodash";
-import { Image } from "@mui/icons-material";
 
 interface CraftProgressBarProps {
   value: number;
@@ -127,6 +126,7 @@ const FishListPage: React.FC = () => {
       cp: 180,
       specialist: false,
     });
+    setClassJobId(8);
   }, []);
 
   const statusInputs = React.useMemo(() => {
@@ -309,7 +309,6 @@ const FishListPage: React.FC = () => {
                               mx={1}
                             >
                               <Avatar
-                                alt="Remy Sharp"
                                 src={action.iconUrl}
                                 sx={{ width: 40, height: 40 }}
                                 variant="square"
