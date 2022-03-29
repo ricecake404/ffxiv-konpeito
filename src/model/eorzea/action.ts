@@ -47,94 +47,13 @@ interface CraftActionData {
   efficiency: number;
   successPercentage: number;
   type: CraftActionType;
-  master: boolean;
+  specialist: boolean;
+  enhancedLevel?: number;
+  enhancedEfficiency?: number;
+  efficiencyBuff: number;
 }
 
 const CraftActionDataList: CraftActionData[] = [
-  {
-    id: 100001,
-    name: "制作",
-    table: "CraftAction",
-    level: 1,
-    cp: 0,
-    durability: 10,
-    efficiency: 100,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100002,
-    name: "加工",
-    table: "CraftAction",
-    level: 5,
-    cp: 18,
-    durability: 10,
-    efficiency: 100,
-    successPercentage: 100,
-    type: "control",
-    master: false,
-  },
-  {
-    id: 100003,
-    name: "精修",
-    table: "CraftAction",
-    level: 7,
-    cp: 88,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "durability",
-    master: false,
-  },
-  {
-    id: 100363,
-    name: "高速制作",
-    table: "CraftAction",
-    level: 9,
-    cp: 0,
-    durability: 10,
-    efficiency: 250,
-    successPercentage: 50,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100355,
-    name: "仓促",
-    table: "CraftAction",
-    level: 9,
-    cp: 0,
-    durability: 10,
-    efficiency: 100,
-    successPercentage: 60,
-    type: "control",
-    master: false,
-  },
-  {
-    id: 100010,
-    name: "观察",
-    table: "CraftAction",
-    level: 13,
-    cp: 7,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "other",
-    master: false,
-  },
-  {
-    id: 100371,
-    name: "秘诀",
-    table: "CraftAction",
-    level: 13,
-    cp: 0,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "other",
-    master: false,
-  },
   {
     id: 19297,
     name: "崇敬",
@@ -145,31 +64,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 0,
     successPercentage: 100,
     type: "buff",
-    master: false,
-  },
-  {
-    id: 4631,
-    name: "俭约",
-    table: "Action",
-    level: 15,
-    cp: 56,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "durability",
-    master: false,
-  },
-  {
-    id: 100004,
-    name: "中级加工",
-    table: "CraftAction",
-    level: 18,
-    cp: 32,
-    durability: 10,
-    efficiency: 125,
-    successPercentage: 100,
-    type: "control",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0.5,
   },
   {
     id: 260,
@@ -181,7 +77,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 0,
     successPercentage: 100,
     type: "buff",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 1,
   },
   {
     id: 19004,
@@ -193,43 +90,47 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 0,
     successPercentage: 100,
     type: "buff",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0.5,
   },
   {
-    id: 100001,
-    name: "制作",
+    id: 100002,
+    name: "加工",
     table: "CraftAction",
-    level: 31,
+    level: 5,
+    cp: 18,
+    durability: 10,
+    efficiency: 100,
+    successPercentage: 100,
+    type: "control",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100355,
+    name: "仓促",
+    table: "CraftAction",
+    level: 9,
     cp: 0,
     durability: 10,
-    efficiency: 120,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
+    efficiency: 100,
+    successPercentage: 60,
+    type: "control",
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
-    id: 19012,
-    name: "最终确认",
-    table: "Action",
-    level: 42,
-    cp: 1,
-    durability: 0,
-    efficiency: 0,
+    id: 100004,
+    name: "中级加工",
+    table: "CraftAction",
+    level: 18,
+    cp: 32,
+    durability: 10,
+    efficiency: 125,
     successPercentage: 100,
-    type: "other",
-    master: false,
-  },
-  {
-    id: 4639,
-    name: "长期俭约",
-    table: "Action",
-    level: 47,
-    cp: 98,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "durability",
-    master: false,
+    type: "control",
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100339,
@@ -241,7 +142,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 100,
     successPercentage: 100,
     type: "control",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100128,
@@ -253,67 +155,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 150,
     successPercentage: 100,
     type: "control",
-    master: false,
-  },
-  {
-    id: 100379,
-    name: "坚信",
-    table: "CraftAction",
-    level: 54,
-    cp: 6,
-    durability: 10,
-    efficiency: 300,
-    successPercentage: 100,
-    type: "first-craftsmanship",
-    master: false,
-  },
-  {
-    id: 100395,
-    name: "设计变动",
-    table: "CraftAction",
-    level: 55,
-    cp: 0,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "other",
-    master: true,
-  },
-  {
-    id: 100203,
-    name: "模范制作",
-    table: "CraftAction",
-    level: 62,
-    cp: 4,
-    durability: 10,
-    efficiency: 150,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100363,
-    name: "高速制作",
-    table: "CraftAction",
-    level: 63,
-    cp: 0,
-    durability: 10,
-    efficiency: 500,
-    successPercentage: 50,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 4574,
-    name: "掌握",
-    table: "Action",
-    level: 65,
-    cp: 96,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "durability",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100227,
@@ -325,19 +168,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 100,
     successPercentage: 100,
     type: "control",
-    master: false,
-  },
-  {
-    id: 100235,
-    name: "注视制作",
-    table: "CraftAction",
-    level: 67,
-    cp: 5,
-    durability: 10,
-    efficiency: 200,
-    successPercentage: 50,
-    type: "craftsmanship",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100243,
@@ -349,19 +181,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 150,
     successPercentage: 50,
     type: "control",
-    master: false,
-  },
-  {
-    id: 100387,
-    name: "闲静",
-    table: "CraftAction",
-    level: 69,
-    cp: 6,
-    durability: 10,
-    efficiency: 100,
-    successPercentage: 100,
-    type: "first-craftsmanship",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100299,
@@ -373,67 +194,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 200,
     successPercentage: 100,
     type: "control",
-    master: false,
-  },
-  {
-    id: 100403,
-    name: "坯料制作",
-    table: "CraftAction",
-    level: 72,
-    cp: 18,
-    durability: 20,
-    efficiency: 300,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100323,
-    name: "精密制作",
-    table: "CraftAction",
-    level: 76,
-    cp: 32,
-    durability: 10,
-    efficiency: 100,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100315,
-    name: "集中制作",
-    table: "CraftAction",
-    level: 78,
-    cp: 6,
-    durability: 10,
-    efficiency: 400,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100283,
-    name: "工匠的神速技巧",
-    table: "CraftAction",
-    level: 80,
-    cp: 250,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "first-craftsmanship",
-    master: false,
-  },
-  {
-    id: 100203,
-    name: "模范制作",
-    table: "CraftAction",
-    level: 82,
-    cp: 7,
-    durability: 10,
-    efficiency: 180,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100411,
@@ -445,43 +207,8 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 150,
     successPercentage: 100,
     type: "control",
-    master: false,
-  },
-  {
-    id: 100403,
-    name: "坯料制作",
-    table: "CraftAction",
-    level: 86,
-    cp: 18,
-    durability: 20,
-    efficiency: 360,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
-  },
-  {
-    id: 100419,
-    name: "专心致志",
-    table: "CraftAction",
-    level: 86,
-    cp: 0,
-    durability: 0,
-    efficiency: 0,
-    successPercentage: 100,
-    type: "other",
-    master: true,
-  },
-  {
-    id: 100427,
-    name: "俭约制作",
-    table: "CraftAction",
-    level: 88,
-    cp: 18,
-    durability: 5,
-    efficiency: 180,
-    successPercentage: 100,
-    type: "craftsmanship",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
   },
   {
     id: 100435,
@@ -493,12 +220,281 @@ const CraftActionDataList: CraftActionData[] = [
     efficiency: 100,
     successPercentage: 100,
     type: "control",
-    master: false,
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100001,
+    name: "制作",
+    table: "CraftAction",
+    level: 1,
+    cp: 0,
+    durability: 10,
+    efficiency: 100,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    enhancedLevel: 31,
+    enhancedEfficiency: 120,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100363,
+    name: "高速制作",
+    table: "CraftAction",
+    level: 9,
+    cp: 0,
+    durability: 10,
+    efficiency: 250,
+    successPercentage: 50,
+    type: "craftsmanship",
+    specialist: false,
+    enhancedLevel: 63,
+    enhancedEfficiency: 500,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100203,
+    name: "模范制作",
+    table: "CraftAction",
+    level: 62,
+    cp: 7,
+    durability: 10,
+    efficiency: 150,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    enhancedLevel: 82,
+    enhancedEfficiency: 180,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100235,
+    name: "注视制作",
+    table: "CraftAction",
+    level: 67,
+    cp: 5,
+    durability: 10,
+    efficiency: 200,
+    successPercentage: 50,
+    type: "craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100403,
+    name: "坯料制作",
+    table: "CraftAction",
+    level: 72,
+    cp: 18,
+    durability: 20,
+    efficiency: 300,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    enhancedLevel: 86,
+    enhancedEfficiency: 360,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100323,
+    name: "精密制作",
+    table: "CraftAction",
+    level: 76,
+    cp: 32,
+    durability: 10,
+    efficiency: 100,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100315,
+    name: "集中制作",
+    table: "CraftAction",
+    level: 78,
+    cp: 6,
+    durability: 10,
+    efficiency: 400,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100427,
+    name: "俭约制作",
+    table: "CraftAction",
+    level: 88,
+    cp: 18,
+    durability: 5,
+    efficiency: 180,
+    successPercentage: 100,
+    type: "craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100003,
+    name: "精修",
+    table: "CraftAction",
+    level: 7,
+    cp: 88,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "durability",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 4631,
+    name: "俭约",
+    table: "Action",
+    level: 15,
+    cp: 56,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "durability",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 4639,
+    name: "长期俭约",
+    table: "Action",
+    level: 47,
+    cp: 98,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "durability",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 4574,
+    name: "掌握",
+    table: "Action",
+    level: 65,
+    cp: 96,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "durability",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100379,
+    name: "坚信",
+    table: "CraftAction",
+    level: 54,
+    cp: 6,
+    durability: 10,
+    efficiency: 300,
+    successPercentage: 100,
+    type: "first-craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100387,
+    name: "闲静",
+    table: "CraftAction",
+    level: 69,
+    cp: 6,
+    durability: 10,
+    efficiency: 100,
+    successPercentage: 100,
+    type: "first-craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100283,
+    name: "工匠的神速技巧",
+    table: "CraftAction",
+    level: 80,
+    cp: 250,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "first-craftsmanship",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100010,
+    name: "观察",
+    table: "CraftAction",
+    level: 13,
+    cp: 7,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "other",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100371,
+    name: "秘诀",
+    table: "CraftAction",
+    level: 13,
+    cp: 0,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "other",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 19012,
+    name: "最终确认",
+    table: "Action",
+    level: 42,
+    cp: 1,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "other",
+    specialist: false,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100395,
+    name: "设计变动",
+    table: "CraftAction",
+    level: 55,
+    cp: 0,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "other",
+    specialist: true,
+    efficiencyBuff: 0,
+  },
+  {
+    id: 100419,
+    name: "专心致志",
+    table: "CraftAction",
+    level: 86,
+    cp: 0,
+    durability: 0,
+    efficiency: 0,
+    successPercentage: 100,
+    type: "other",
+    specialist: true,
+    efficiencyBuff: 0,
   },
 ];
 
-export interface CraftAction extends Omit<CraftActionData, "id" | "name"> {
-  id: string;
+export interface Action extends Omit<CraftActionData, "name"> {
+  id: number;
   classJobActions: Map<ClassJobId, number>;
   name: MLName;
   table: DBTable;
@@ -508,7 +504,7 @@ export interface CraftAction extends Omit<CraftActionData, "id" | "name"> {
   efficiency: number;
   successPercentage: number;
   type: CraftActionType;
-  master: boolean;
+  specialist: boolean;
 }
 
 const ActionMaps: Record<number, number[]> = {
@@ -540,24 +536,40 @@ const ActionMaps: Record<number, number[]> = {
   100435: [100435, 100436, 100437, 100438, 100439, 100440, 100441, 100442],
 };
 
-export const CraftActionList: CraftAction[] = CraftActionDataList.map(
-  (data) => {
-    return {
-      ...data,
-      id: `${data.id}-${data.level}`,
-      name: { chs: data.name, en: "", ja: "" },
-      classJobActions: new Map(
-        CraftClassJobList.map((job, index) => {
-          if (ActionMaps[data.id]) {
-            return [job.id, ActionMaps[data.id][index]];
-          } else {
-            return [job.id, data.id];
-          }
-        })
-      ),
-    };
-  }
+export const CraftActionList: Action[] = CraftActionDataList.map((data) => {
+  return {
+    ...data,
+    name: { chs: data.name, en: "", ja: "" },
+    classJobActions: new Map(
+      CraftClassJobList.map((job, index) => {
+        if (ActionMaps[data.id]) {
+          return [job.id, ActionMaps[data.id][index]];
+        } else {
+          return [job.id, data.id];
+        }
+      })
+    ),
+  };
+});
+
+export const CraftActionMap: Map<number, Action> = new Map(
+  CraftActionList.map((it) => [it.id, it])
 );
+
+export type CraftConditionType = "White" | "Black" | "Red" | "Rainbow";
+
+interface CraftCondition {
+  type: CraftConditionType;
+  factor: number;
+}
+
+export const CraftConditionBlack: CraftCondition = { type: "Black", factor: 0 };
+export const CraftConditionWhite: CraftCondition = { type: "White", factor: 1 };
+export const CraftConditionRed: CraftCondition = { type: "Red", factor: 1.5 };
+export const CraftConditionRainbow: CraftCondition = {
+  type: "Rainbow",
+  factor: 4,
+};
 
 export interface CraftingProcessStatus {
   cp: number;
@@ -572,6 +584,12 @@ export interface CraftingProcessStatus {
   durabilityTotal: number;
   durabilityPercentage: number;
   successPercentage: number;
+
+  // action/buff status
+  observe: boolean;
+  condition: CraftCondition;
+  wasteNotStack: number;
+  innerQuietStack: number;
 }
 
 export const EmptyCraftingProcessStatus = {
@@ -587,6 +605,10 @@ export const EmptyCraftingProcessStatus = {
   durabilityTotal: 0,
   durabilityPercentage: 0,
   successPercentage: 1,
+  observe: false,
+  condition: CraftConditionWhite,
+  wasteNotStack: 0,
+  innerQuietStack: 0,
 };
 
 export const initCraftingProcessStatus = (
@@ -597,34 +619,14 @@ export const initCraftingProcessStatus = (
     Math.floor((standard * factor) / 100);
   const durability = calcReal(recipe.rltDurability, recipe.durabilityFactor);
   return {
+    ...EmptyCraftingProcessStatus,
     cp: cs.cp,
     cpTotal: cs.cp,
-    progress: 0,
     progressTotal: calcReal(recipe.rltProgress, recipe.progressFactor),
-    progressPercentage: 0,
-    quality: 0,
     qualityTotal: calcReal(recipe.rltQuality, recipe.qualityFactor),
-    qualityPercentage: 0,
     durability: durability,
     durabilityTotal: durability,
-    durabilityPercentage: 0,
-    successPercentage: 1,
   };
-};
-
-export const craft = (
-  ps: CraftingProcessStatus,
-  s: CraftingStatus,
-  action: CraftAction
-) => {
-  switch (action.name.chs) {
-    case "制作*":
-      return {
-        ...ps,
-        cp: ps.cp - action.cp,
-        progress: ps.progress + action.efficiency,
-      };
-  }
 };
 
 export const CraftActions = [];

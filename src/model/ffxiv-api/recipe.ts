@@ -37,8 +37,13 @@ export const toRecipe = (r: RecipeResp): Recipe => {
     progressFactor: r.DifficultyFactor,
     qualityFactor: r.QualityFactor,
     durabilityFactor: r.DurabilityFactor,
+    rltLevel: r.RecipeLevelTable.ClassJobLevel,
     rltProgress: r.RecipeLevelTable.Difficulty,
     rltQuality: r.RecipeLevelTable.Quality,
     rltDurability: r.RecipeLevelTable.Durability,
+    rltProgressDivider: r.RecipeLevelTable.ProgressDivider,
+    rltProgressModifier: r.RecipeLevelTable.ProgressModifier,
+    rltQualityDivider: r.RecipeLevelTable.QualityDivider,
+    rltQualityModifier: r.RecipeLevelTable.QualityModifier,
   };
 };

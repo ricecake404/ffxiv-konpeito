@@ -4,12 +4,14 @@ import {
   AccordionSummary,
   Avatar,
   Box,
+  ButtonBase,
   Checkbox,
   Container,
   FormControlLabel,
   LinearProgress,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React from "react";
@@ -32,20 +34,22 @@ import {
 } from "../model/eorzea/status";
 import { toRecipe } from "../model/ffxiv-api/recipe";
 import {
-  CraftAction,
+  Action,
   CraftActionList,
+  CraftActionMap,
   CraftingProcessStatus,
   EmptyCraftingProcessStatus,
   initCraftingProcessStatus,
-} from "../model/eorzea/CraftAction";
+} from "../model/eorzea/action";
 import { groupBy, uniq } from "lodash";
+import { craft, toHQPercent } from "../model/eorzea/craft";
 
 interface CraftProgressBarProps {
   value: number;
   total: number;
 }
 
-interface CraftActionDisplay extends CraftAction {
+interface CraftActionDisplay extends Action {
   iconUrl: string;
   actionId: number;
 }
@@ -54,6 +58,7 @@ const CraftProgressBar: React.FC<CraftProgressBarProps> = ({
   value,
   total,
 }) => {
+  const displayValue = Math.min(value, total);
   const calcPercentage = (val: number, total: number) => (val / total) * 100;
 
   return (
@@ -62,16 +67,54 @@ const CraftProgressBar: React.FC<CraftProgressBarProps> = ({
         <Box sx={{ width: "100%", mr: 1 }}>
           <LinearProgress
             variant="determinate"
-            value={calcPercentage(value, total)}
+            value={calcPercentage(displayValue, total)}
           />
         </Box>
         <Box sx={{ minWidth: 70 }}>
           <Typography variant="body2" color="text.secondary">
-            {`${value} / ${total}`}
+            {`${displayValue} / ${total}`}
           </Typography>
         </Box>
       </Box>
     </Box>
+  );
+};
+
+interface ActionButtonProps {
+  action: CraftActionDisplay;
+  onClick?: () => void;
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({ action, onClick }) => {
+  return (
+    <Tooltip title={action.name.chs} arrow placement="top">
+      <ButtonBase onClick={() => onClick && onClick()}>
+        <Avatar
+          src={action.iconUrl}
+          sx={{ width: 40, height: 40 }}
+          variant="square"
+        />
+      </ButtonBase>
+    </Tooltip>
+  );
+};
+
+interface ActionPipelineProps {
+  value: CraftActionDisplay[];
+  onRemove: (index: number) => void;
+}
+
+const ActionPipeline: React.FC<ActionPipelineProps> = ({ value, onRemove }) => {
+  return (
+    <Stack direction="row">
+      {value.map((action, index) => {
+        return (
+          <Box sx={{ mx: 0.5 }} key={index}>
+            <ActionButton action={action} onClick={() => onRemove(index)} />
+          </Box>
+        );
+      })}
+    </Stack>
   );
 };
 
@@ -108,11 +151,13 @@ const FishListPage: React.FC = () => {
   );
   const [craftingProcessStatus, setCraftingProcessStatus] =
     React.useState<CraftingProcessStatus>(EmptyCraftingProcessStatus);
+  const [CPSList, setCPSList] = React.useState<CraftingProcessStatus[]>([]);
+
   React.useEffect(() => {
     if (recipe) {
-      setCraftingProcessStatus(
-        initCraftingProcessStatus(craftingStatus, recipe)
-      );
+      const initStatus = initCraftingProcessStatus(craftingStatus, recipe);
+      setCraftingProcessStatus(initStatus);
+      setCPSList([initStatus]);
     }
   }, [craftingStatus, recipe]);
 
@@ -207,6 +252,43 @@ const FishListPage: React.FC = () => {
     })();
   }, [classJobId]);
 
+  const [actionPipeline, setActionPipeline] = React.useState<Action[]>([]);
+  const actionPipelineDisplay = React.useMemo<CraftActionDisplay[]>(() => {
+    return actionPipeline.map(
+      (action) => actions.find((it) => it.id === action.id)!!
+    );
+  }, [actionPipeline, actions]);
+
+  const handleActionClicked = (actionDisplay: CraftActionDisplay) => {
+    if (recipe) {
+      const action = CraftActionMap.get(actionDisplay.id)!!;
+      setActionPipeline((prev) => prev.concat([action]));
+      setCraftingProcessStatus(
+        craft(craftingProcessStatus, craftingStatus, recipe, action)
+      );
+    }
+  };
+
+  const handleRemove = (index: number) => {
+    const reCalcAll = (actionPipeline: Action[]) => {
+      if (recipe) {
+        let cps = initCraftingProcessStatus(craftingStatus, recipe);
+        setCPSList([cps]);
+        for (let action of actionPipeline) {
+          cps = craft(cps, craftingStatus, recipe, action);
+        }
+        setCraftingProcessStatus(cps);
+        setCPSList((prev) => prev.concat([cps]));
+      }
+    };
+
+    let newPipeline = [...actionPipeline];
+    newPipeline.splice(index, 1);
+
+    setActionPipeline(newPipeline);
+    reCalcAll(newPipeline);
+  };
+
   return (
     <>
       <Container sx={{ py: 1 }}>
@@ -293,6 +375,18 @@ const FishListPage: React.FC = () => {
                 value={craftingProcessStatus.durability}
                 total={craftingProcessStatus.durabilityTotal}
               />
+              <ActionPipeline
+                value={actionPipelineDisplay}
+                onRemove={handleRemove}
+              />
+              <Box>
+                <Typography>
+                  {`HQ: ${toHQPercent(
+                    craftingProcessStatus.quality /
+                      craftingProcessStatus.qualityTotal
+                  )}%`}
+                </Typography>
+              </Box>
               {/*<Box>{JSON.stringify(actions)}</Box>*/}
               <Box>
                 {Object.entries(groupBy(actions, "type")).map(
@@ -308,12 +402,10 @@ const FishListPage: React.FC = () => {
                               flexDirection="column"
                               mx={1}
                             >
-                              <Avatar
-                                src={action.iconUrl}
-                                sx={{ width: 40, height: 40 }}
-                                variant="square"
+                              <ActionButton
+                                action={action}
+                                onClick={() => handleActionClicked(action)}
                               />
-                              {action.name.chs}
                             </Box>
                           ))}
                         </Stack>
